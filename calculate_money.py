@@ -41,7 +41,7 @@ class Calculation(QMainWindow):
 
         self.table_money = QTableWidget()
         self.table_money.setColumnCount(4)
-        self.table_money.setRowCount(5)
+        self.table_money.setRowCount(6)
         self.table_money.setHorizontalHeaderLabels(['1', '2', '3', '4'])
 
         self.table_money.horizontalHeaderItem(0).setTextAlignment(Qt.AlignHCenter)
@@ -69,6 +69,10 @@ class Calculation(QMainWindow):
         self.table_money.setItem(3, 3, QTableWidgetItem(str(self.help_lst[7])))
         self.table_money.setItem(4, 2, QTableWidgetItem("Дима забрал: "))
         self.table_money.setItem(4, 3, QTableWidgetItem(str(self.help_lst[6])))
+        self.table_money.setItem(5, 0, QTableWidgetItem("Левак: "))
+        self.table_money.setItem(5, 1, QTableWidgetItem(str(self.help_lst[8])))
+        self.table_money.setItem(5, 2, QTableWidgetItem("З/п чёрная: "))
+        self.table_money.setItem(5, 3, QTableWidgetItem(str(self.black_money)))
         self.table_money.resizeColumnsToContents()
         grid_layout.addWidget(self.table_money, 0, 0)
         self.show()
@@ -111,6 +115,11 @@ class Calculation(QMainWindow):
         self.lable_costs = QLabel('Расход: ', hello)
         self.lable_costs.move(15, self.y_line+150)
 
+        self.line_black_money = QLineEdit(hello)
+        self.line_black_money.move(self.x_line, self.y_line + 200)
+        self.lable_black_money = QLabel('Левак: ', hello)
+        self.lable_black_money.move(15, self.y_line + 200)
+
         self.line_admission = QLineEdit(hello)
         self.line_admission.move(self.x_line + 250, self.y_line)
         self.lable_admission = QLabel('Довоз: ', hello)
@@ -130,15 +139,17 @@ class Calculation(QMainWindow):
         self.line_elena.move(self.x_line+250, self.y_line+150)
         self.lable_elena = QLabel('Лена: ', hello)
         self.lable_elena.move(240, self.y_line+150)
+
         self.set_fonts(lable_help, self.lable_all_money,
                        self.lable_bn, self.lable_sale,
-                       self.lable_costs, self.lable_admission,
-                       self.lable_decommissioned, self.lable_dmitriy,
-                       self.lable_elena)
+                       self.lable_costs, self.lable_black_money,
+                       self.lable_admission, self.lable_decommissioned,
+                       self.lable_dmitriy, self.lable_elena)
         self.set_lenght_size(self.line_all_money, self.line_bn,
                              self.line_sale, self.line_сosts,
-                             self.line_admission, self.line_decommissioned,
-                             self.line_dmitriy, self.line_elena)
+                             self.line_black_money, self.line_admission,
+                             self.line_decommissioned, self.line_dmitriy,
+                             self.line_elena)
         thanks.clicked.connect(hello.close)
         qr = self.frameGeometry()
         cp = QDesktopWidget().availableGeometry().center()
@@ -157,9 +168,10 @@ class Calculation(QMainWindow):
 
     def calc_and_printer(self):
         self.value_list = [self.line_all_money, self.line_bn,
-                             self.line_sale, self.line_сosts,
-                             self.line_admission, self.line_decommissioned,
-                             self.line_dmitriy, self.line_elena]
+                           self.line_sale, self.line_сosts,
+                           self.line_admission, self.line_decommissioned,
+                           self.line_dmitriy, self.line_elena,
+                           self.line_black_money,]
         self.help_lst = [i for i in range(0, len(self.value_list))]
         help_variable = 0
         for data in self.value_list:
@@ -172,10 +184,13 @@ class Calculation(QMainWindow):
         '''
         Draw values in table
         '''
-        self.all_money = 20 + (((self.help_lst[0] - self.help_lst[2]) / 100) * 5)
+        self.all_money = 20 + (((self.help_lst[0] - self.help_lst[2]) / 100)) * 5
         self.rest_money = self.help_lst[0] - self.help_lst[1] - self.help_lst[2] - \
                           self.help_lst[3] - self.help_lst[6] - self.help_lst[7] - \
-                          self.all_money
+                          self.help_lst[8] -  self.all_money
+        self.all_money = float('{:.3f}'.format(self.all_money))
+        self.rest_money = float('{:.3f}'.format(self.rest_money))
+        self.black_money = self.all_money + self.help_lst[8]
         self.general_window()
 
     def check_n_color(self):
